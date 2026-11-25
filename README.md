@@ -1,98 +1,52 @@
-# Happy Birthday Endu 🎂
+# Happy Birthday Endu 🚀
 
-เว็บอวยพรวันเกิดสำหรับ **Natchaya (Endu)** — 16 สิงหาคม 2535
+เว็บอวยพรวันเกิดธีมอวกาศสำหรับ **Natchaya (Endu)** เป็น HTML/CSS/JS ล้วน ไม่ต้อง build
 
-## ฟีเจอร์
+## หน้าแรก: กรอกวันเกิดก่อนเข้า
 
-- Animation เปิดของขวัญ + confetti
-- นับถอยหลังถึงวันเกิด / แสดงอายุ
-- **จิ้มลูกโป่ง** — เกมแตะลูกโป่งให้แตก
-- **เป่าเทียน** — กดค้างบนเทียนเพื่อเป่า
-- **ขูดการ์ด** — เปิดข้อความลับ
-- **เก็บหัวใจ** — แตะหัวใจที่ลอยขึ้นมา
-- **ฟอร์มอวยพร** — เก็บใน localStorage
-- Easter egg — แตะหัวใจ 5 ครั้งที่ footer
-- รองรับมือถือหลายขนาด (responsive)
+ใส่ตัวเลข 8 หลัก `ววดดปปปป` ปีเป็น พ.ศ. (เช่น เกิด 5 มกราคม 2540 → `05012540`) กรอกถูกถึงเข้าได้
+
+วันเกิดจริงไม่ได้เขียนไว้ในโค้ด เก็บเป็น hash ใน `js/birthday.js` แล้วใช้ค่าที่กรอกถูกไปคำนวณอายุต่อ
+หมายเหตุ: เป็นด่านฝั่งเบราว์เซอร์ กันคนทั่วไปได้ แต่ไม่ใช่ระบบรักษาความปลอดภัย
+
+## ข้อความเปลี่ยนตามวันจริง (เวลาไทย)
+
+| ช่วง | หน้าเว็บแสดง |
+|------|-------------|
+| 1 ม.ค. ถึงก่อนวันเกิด | นับถอยหลังถึงวันเกิด |
+| วันเกิด | สุขสันต์วันเกิด + อายุที่ครบ |
+| หลังวันเกิด ถึง 31 ธ.ค. | สุขสันต์วันเกิดย้อนหลัง + ผ่านมากี่วัน |
+
+อายุเพิ่มเองทุกปี ไม่ต้องแก้โค้ด ทดสอบวันอื่นได้ด้วย `?preview=2027-08-15T23:59:50`
+
+## เกม 8 เกม ของสะสม 28 ชิ้น
+
+ยานเก็บดวงดาว, พิทักษ์ดาวเค้ก, ต่อกลุ่มดาว, จับคู่ดาวเคราะห์, สัญญาณจากต่างดาว,
+เค้กทะลุชั้นบรรยากาศ, เป่าเทียนบนดวงจันทร์, พลุซูเปอร์โนวา
+
+ของสะสมและสถิติเก็บใน localStorage ของเครื่องนั้น
 
 ## เปิดดูในเครื่อง
 
 ```bash
-# วิธีง่าย — ใช้ Python
-cd Birthday
 python -m http.server 8080
-# เปิด http://localhost:8080
 ```
 
-หรือเปิดไฟล์ `index.html` ตรง ๆ ในเบราว์เซอร์
+## Deploy บน GitHub Pages
 
-## Deploy บน AWS (S3 + CloudFront)
-
-### 1. สร้าง S3 Bucket
-
-```bash
-aws s3 mb s3://happy-birthday-endu --region ap-southeast-1
-```
-
-### 2. อัปโหลดไฟล์
-
-```bash
-aws s3 sync . s3://happy-birthday-endu --exclude ".git/*" --exclude "README.md"
-```
-
-### 3. เปิด Static Website Hosting
-
-- S3 Console → Bucket → Properties → Static website hosting → Enable
-- Index document: `index.html`
-
-### 4. (แนะนำ) ใช้ CloudFront
-
-- สร้าง distribution ชี้ไป S3 bucket
-- ใส่ HTTPS + custom domain ได้
-
-### 5. Bucket Policy (public read)
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Sid": "PublicReadGetObject",
-    "Effect": "Allow",
-    "Principal": "*",
-    "Action": "s3:GetObject",
-    "Resource": "arn:aws:s3:::happy-birthday-endu/*"
-  }]
-}
-```
-
-## ข้อมูลเก็บไว้ที่ไหน?
-
-| วิธี | เหมาะกับ | ข้อดี | ข้อจำกัด |
-|------|----------|-------|----------|
-| **localStorage** (ใช้อยู่ตอนนี้) | ของขวัญส่วนตัว | ไม่ต้องมี server, ฟรี | เห็นเฉพาะเบราว์เซอร์/เครื่องนั้น |
-| **AWS Lambda + DynamoDB** | อยากให้ทุกคนเห็นคำอวยพรร่วมกัน | เก็บถาวร, แชร์ได้ | ต้อง setup API |
-| **AWS Amplify** | อยาก deploy + backend ง่าย | CI/CD ในตัว | มีค่าใช้จ่ายเมื่อใช้เยอะ |
-
-### ถ้าอยาก upgrade เป็น DynamoDB ภายหลัง
-
-1. สร้าง DynamoDB table `birthday-wishes`
-2. สร้าง Lambda function รับ POST/GET
-3. ใช้ API Gateway เป็น REST endpoint
-4. แก้ `js/main.js` ให้ fetch แทน localStorage
-
-## ปรับแต่ง
-
-- **ดนตรี**: ทำในตัวด้วย Web Audio — ทำนอง Happy Birthday ไม่มีเสียงร้อง เล่นอัตโนมัติเมื่อเปิดของขวัญ ครั้งเดียวแล้วจบ
-- **รูปภาพ**: เพิ่ม section ใน `index.html` และใส่รูปในโฟลเดอร์ `assets/`
-- **ข้อความ**: แก้ใน `index.html` และ `js/main.js` (ตัวแปร `BIRTH_DATE`)
+Settings → Pages → Deploy from a branch → `main` / `(root)` จากนั้น push ขึ้น `main` เว็บจะอัปเดตเอง
+(แก้ไฟล์ css/js แล้วให้เพิ่มเลข `?v=` ใน `index.html` เพื่อไม่ให้เบราว์เซอร์ใช้ไฟล์เก่า)
 
 ## โครงสร้าง
 
 ```
-Birthday/
-├── index.html
-├── css/style.css
-├── js/
-│   ├── confetti.js
-│   └── main.js
-└── README.md
+index.html
+css/style.css
+js/birthday.js      วันเกิด อายุ ด่านกรอกวันเกิด
+js/art.js           ภาพวาด SVG
+js/audio.js         เพลงและเสียง
+js/sky.js           ท้องฟ้า ดาวตก วาร์ป คอนเฟตติ
+js/album.js         สมุดสะสม
+js/main.js          หน้าเว็บหลักและข้อความอวยพร
+js/games/           shell.js + เกมทั้งหมด
 ```

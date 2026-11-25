@@ -2,208 +2,183 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="สุขสันต์วันเกิด ณัฐชยา (เอ็นดู)">
-  <meta name="theme-color" content="#ff6b9d">
-  <title>สุขสันต์วันเกิด เอ็นดู 🎂</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="ยานอวกาศลำหนึ่งกำลังรอเจ้าของ">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0a0d1f">
+  <title>ถึง เอ็นดู</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cellipse cx='32' cy='33' rx='30' ry='9' fill='none' stroke='%23d9a86c' stroke-width='4' transform='rotate(-18 32 33)'/%3E%3Ccircle cx='32' cy='32' r='18' fill='%23ffc857'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Kodchasan:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2">
 </head>
 <body>
-  <div id="loader" class="loader" aria-hidden="true">
-    <div class="loader-cake">🎂</div>
-    <p>กำลังเตรียมของขวัญ...</p>
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div id="toasts" class="toasts" role="status"></div>
+  <noscript><p class="noscript">หน้านี้ต้องเปิด JavaScript ก่อนนะ</p></noscript>
+
+  <!-- ด่านกรอกวันเกิด -->
+  <div id="gate" class="gate">
+    <form id="gate-form" class="gate-form" novalidate autocomplete="off">
+      <div class="gate-rocket" aria-hidden="true">
+        <span class="gate-ring"></span><span class="gate-ring r2"></span>
+        <img data-art="ship" alt="">
+      </div>
+      <h1>ยานลำนี้รอเจ้าของอยู่</h1>
+      <p class="gate-lead">กรอกวันเกิดของเธอให้ถูก แล้วยานจะออกเดินทาง</p>
+
+      <div class="code" id="code">
+        <input id="code-input" type="text" inputmode="numeric" autocomplete="off" aria-label="วันเกิด 8 หลัก วัน เดือน ปี พ.ศ." aria-describedby="code-help code-error">
+        <div class="code-group" aria-hidden="true"><div><i>ว</i><i>ว</i></div><span>วัน</span></div>
+        <div class="code-group" aria-hidden="true"><div><i>ด</i><i>ด</i></div><span>เดือน</span></div>
+        <div class="code-group" aria-hidden="true"><div><i>ป</i><i>ป</i><i>ป</i><i>ป</i></div><span>ปี พ.ศ.</span></div>
+      </div>
+
+      <p id="code-error" class="code-error" role="alert"></p>
+      <button class="btn btn-big" type="submit">ออกเดินทาง</button>
+      <p id="code-help" class="code-help"><span>ใส่ตัวเลข 8 หลักติดกัน</span> <span>(วัน 2 หลัก เดือน 2 หลัก ปี พ.ศ. 4 หลัก)</span><br>ตัวอย่าง เกิด 5 มกราคม 2540 ให้กรอก <b>05012540</b></p>
+    </form>
   </div>
 
-  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
-  <div id="floating-hearts" aria-hidden="true"></div>
+  <div id="app" hidden>
+    <nav class="nav" aria-label="เมนูหลัก">
+      <a class="nav-logo" href="#hero">เอ็นดู</a>
+      <a href="#games">เกม</a>
+      <a href="#album">สมุดสะสม</a>
+      <a href="#letters">ข้อความ</a>
+      <button id="mute-btn" class="nav-mute" type="button" aria-pressed="false">เสียง: เปิด</button>
+    </nav>
 
-  <!-- Intro overlay -->
-  <div id="intro-overlay" class="intro-overlay">
-    <div class="intro-content">
-      <div class="intro-sparkles">✨</div>
-      <h1 class="intro-title">มีของขวัญให้</h1>
-      <p class="intro-sub">แตะเพื่อเปิดของขวัญและฟังดนตรี 🎵</p>
-      <button id="start-btn" class="btn-primary pulse">เปิดของขวัญ 🎁</button>
-    </div>
-  </div>
-
-  <nav class="nav" id="nav">
-    <span class="nav-logo">เอ็นดู 🎀</span>
-    <button id="nav-toggle" class="nav-toggle" aria-label="เปิดเมนู">☰</button>
-    <ul class="nav-links" id="nav-links">
-      <li><a href="#hero">หน้าแรก</a></li>
-      <li><a href="#play">เล่นกัน</a></li>
-    </ul>
-  </nav>
-
-  <main>
-    <!-- Hero -->
-    <section id="hero" class="section hero">
-      <div class="hero-bg-shapes" aria-hidden="true"></div>
-      <div class="container hero-inner reveal">
-        <p class="hero-tag">16 สิงหาคม · สุขสันต์วันเกิด</p>
-        <h1 class="hero-name">
-          <span class="name-greeting">สุขสันต์วันเกิดนะ</span>
-          <span class="name-line">ณัฐชยา</span>
-          <span class="name-nick">เอ็นดู</span>
-        </h1>
-        <p class="hero-message" id="hero-message">🎉 วันนี้เป็นวันของเธอนะ เอ็นดู! ขอให้มีความสุขมาก ๆ ✨</p>
-        <div class="hero-actions">
-          <button class="btn-secondary" id="confetti-btn">โปรยฉลอง 🎊</button>
-          <button class="btn-secondary" id="music-btn">🎵 เปิดดนตรี</button>
-        </div>
-        <div class="scroll-hint">
-          <span>เลื่อนลง</span>
-          <div class="scroll-arrow"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Interactive Play Zone -->
-    <section id="play" class="section play">
-      <div class="container">
-        <h2 class="section-title reveal">โซนเล่นสนุก 🎮</h2>
-        <p class="section-sub reveal">คลิก แตะ ลาก — ลองเล่นทุกอย่าง!</p>
-
-        <div class="play-grid">
-          <!-- Balloon pop -->
-          <div class="play-card reveal">
-            <h3>🎈 จิ้มลูกโป่ง</h3>
-            <p class="play-desc">แตะลูกโป่งให้ครบ 10 ลูก!</p>
-            <div class="balloon-area" id="balloon-area">
-              <div class="game-win" id="balloon-win" hidden>
-                <p class="game-win-title">🎉 แตกครบแล้ว!</p>
-                <p class="game-win-msg">สุขสันต์วันเกิดนะ เอ็นดู!</p>
-                <button type="button" class="btn-small" id="balloon-replay">เล่นอีกครั้ง</button>
-              </div>
-            </div>
-            <p class="play-score">แตกแล้ว: <span id="balloon-score">0</span>/10</p>
-          </div>
-
-          <!-- Cake candles -->
-          <div class="play-card reveal" data-delay="1">
-            <h3>🕯️ เป่าเทียน</h3>
-            <p class="play-desc">แตะเทียนทีละเล่นเพื่อเป่าให้ดับ</p>
-            <div class="cake-wrap">
-              <div class="cake">
-                <div class="candles" id="candles">
-                  <div class="candle lit" data-index="0"><div class="flame"></div></div>
-                  <div class="candle lit" data-index="1"><div class="flame"></div></div>
-                  <div class="candle lit" data-index="2"><div class="flame"></div></div>
-                  <div class="candle lit" data-index="3"><div class="flame"></div></div>
-                  <div class="candle lit" data-index="4"><div class="flame"></div></div>
-                </div>
-                <div class="cake-body"></div>
-              </div>
-            </div>
-            <p class="play-result" id="candle-result" hidden>🎂 เป่าหมดแล้ว! สุขสันต์วันเกิดนะ เอ็นดู!</p>
-            <button class="btn-small" id="relight-btn">จุดเทียนใหม่</button>
-          </div>
-
-          <!-- Scratch card -->
-          <div class="play-card reveal" data-delay="2">
-            <h3>🎫 ขูดการ์ด</h3>
-            <p class="play-desc">ใช้นิ้วขูดเพื่อเปิดข้อความลับ</p>
-            <div class="scratch-wrap">
-              <canvas id="scratch-canvas"></canvas>
-              <div class="scratch-secret">
-                <p>เอ็นดูคือคนพิเศษของวันนี้ 💖</p>
-                <p>ขอให้ปีนี้เต็มไปด้วยรอยยิ้มนะ!</p>
-              </div>
+    <main>
+      <section id="hero" class="hero">
+        <div class="hero-text">
+          <h1><span id="hero-greet"></span><strong>เอ็นดู</strong></h1>
+          <p id="hero-msg" class="hero-msg"></p>
+          <div class="count">
+            <p id="count-label"></p>
+            <div class="count-row" role="timer" aria-live="off">
+              <span id="count-days-box"><b id="c-d">0</b>วัน</span><span><b id="c-h">0</b>ชั่วโมง</span><span><b id="c-m">0</b>นาที</span><span><b id="c-s">0</b>วินาที</span>
             </div>
           </div>
-
-          <!-- Tap hearts -->
-          <div class="play-card reveal" data-delay="3">
-            <h3>💖 เก็บหัวใจ</h3>
-            <p class="play-desc">แตะหัวใจให้ครบ 10 ดวง!</p>
-            <div class="heart-game" id="heart-game">
-              <div class="game-win" id="heart-win" hidden>
-                <p class="game-win-title">💖 ครบแล้ว!</p>
-                <p class="game-win-msg">เอ็นดูได้หัวใจเต็มเปี่ยมเลย!</p>
-                <button type="button" class="btn-small" id="heart-replay">เล่นอีกครั้ง</button>
-              </div>
-              <p class="heart-score">หัวใจ: <span id="heart-score">0</span>/10</p>
-            </div>
-          </div>
-
-          <!-- Envelope -->
-          <div class="play-card reveal" data-delay="4">
-            <h3>💌 ซองจดหมาย</h3>
-            <p class="play-desc">แตะซองเพื่อเปิดอ่าน</p>
-            <div class="envelope-zone" id="envelope-zone">
-              <button type="button" class="envelope-closed" id="envelope-btn" aria-label="เปิดซองจดหมาย">
-                <span class="envelope-emoji">💌</span>
-                <span>แตะเพื่อเปิดซอง</span>
-              </button>
-              <div class="envelope-letter" id="envelope-letter" hidden>
-                <p class="letter-to">ถึง เอ็นดู 💕</p>
-                <p>วันนี้เป็นวันที่พิเศษที่สุด<br>ขอให้เธอยิ้มได้ทั้งวัน<br>และรู้ว่ามีคนคิดถึงเธอเสมอ</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Random wish -->
-          <div class="play-card reveal" data-delay="5">
-            <h3>🎲 สุ่มคำอวยพร</h3>
-            <p class="play-desc">กดเพื่อสุ่มข้อความดีๆ ให้วันนี้</p>
-            <div class="random-wish-box">
-              <p class="random-wish-text" id="random-wish-text">กดปุ่มด้านล่างเพื่อสุ่ม ✨</p>
-              <button type="button" class="btn-primary" id="random-wish-btn">สุ่มเลย!</button>
-            </div>
-          </div>
-
-          <!-- Fireworks -->
-          <div class="play-card reveal" data-delay="6">
-            <h3>🎆 จิ้มพลุ</h3>
-            <p class="play-desc">แตะที่ไหนก็ได้เพื่อจุดพลุ!</p>
-            <div class="firework-zone" id="firework-zone">
-              <p class="firework-hint">✨ แตะตรงนี้ ✨</p>
-            </div>
-            <p class="play-score">จุดแล้ว: <span id="firework-count">0</span> ครั้ง</p>
-          </div>
-
-          <!-- Gift box -->
-          <div class="play-card reveal" data-delay="7">
-            <h3>🎁 กล่องของขวัญ</h3>
-            <p class="play-desc">แตะกล่อง 3 ครั้งเพื่อเปิด!</p>
-            <div class="gift-zone" id="gift-zone">
-              <button type="button" class="gift-box-btn" id="gift-box-btn" aria-label="เปิดกล่องของขวัญ">
-                <span class="gift-box-icon" id="gift-box-icon">🎁</span>
-              </button>
-              <p class="gift-tap-hint" id="gift-tap-hint">แตะอีก <span id="gift-taps-left">3</span> ครั้ง</p>
-              <p class="play-result" id="gift-result" hidden>🎀 สุขสันต์วันเกิดนะ เอ็นดู!</p>
-            </div>
+          <div class="hero-actions">
+            <a class="btn" href="#games">เล่นเกมสะสมดาว</a>
+            <button class="btn btn-ghost" id="song-btn" type="button">เปิดเพลงวันเกิด</button>
+            <button class="btn btn-ghost" id="party-btn" type="button">โปรยดาวฉลอง</button>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Footer -->
+        <figure class="orbit">
+          <svg viewBox="0 0 400 400" role="img" aria-labelledby="orbit-cap">
+            <defs>
+              <radialGradient id="sun-g" cx="40%" cy="35%"><stop offset="0" stop-color="#fff3c4"/><stop offset=".55" stop-color="#ffc857"/><stop offset="1" stop-color="#ff9f45"/></radialGradient>
+              <radialGradient id="sun-glow"><stop offset="0" stop-color="#ffc857" stop-opacity=".55"/><stop offset="1" stop-color="#ffc857" stop-opacity="0"/></radialGradient>
+              <path id="in1" d="M200 132a88 68 0 0 1 0 136a88 68 0 0 1 0-136"/>
+              <path id="in2" d="M200 102a122 98 0 0 1 0 196a122 98 0 0 1 0-196"/>
+            </defs>
+            <circle class="glow" cx="200" cy="200" r="150" fill="url(#sun-glow)"/>
+            <g fill="none" stroke="#a9b0d6" stroke-opacity=".28" stroke-dasharray="2 6"><use href="#in1"/><use href="#in2"/></g>
+            <path d="M200 65A165 135 0 0 1 200 335A165 135 0 0 1 200 65" fill="none" stroke="#a9b0d6" stroke-opacity=".35" stroke-width="2"/>
+            <path id="orbit-arc" d="M200 65A165 135 0 0 1 200 335A165 135 0 0 1 200 65" pathLength="1" fill="none" stroke="#ffc857" stroke-width="4" stroke-linecap="round" stroke-dasharray="0 1"/>
+            <image id="o-mercury" width="26" height="26" x="-13" y="-13"><animateMotion dur="11s" repeatCount="indefinite"><mpath href="#in1"/></animateMotion></image>
+            <image id="o-venus" width="34" height="34" x="-17" y="-17"><animateMotion dur="19s" begin="-7s" repeatCount="indefinite"><mpath href="#in2"/></animateMotion></image>
+            <g class="sun-rays" stroke="#ffc857" stroke-width="5" stroke-linecap="round" id="sun-rays"></g>
+            <circle cx="200" cy="200" r="50" fill="url(#sun-g)"/>
+            <text id="orbit-age" x="200" y="212" text-anchor="middle" class="o-age">0</text>
+            <text x="200" y="233" text-anchor="middle" class="o-unit">ปี</text>
+            <g transform="translate(200 65)"><path d="M0-20V4" stroke="#ff7f8e" stroke-width="3" stroke-linecap="round"/><path d="M0-20l17 5-17 6z" fill="#ff7f8e"/><circle r="5" fill="#ff7f8e"/></g>
+            <text id="orbit-date" x="200" y="18" text-anchor="middle" class="o-date"></text>
+            <g id="orbit-earth"><image id="o-earth" width="54" height="54" x="-27" y="-27"/>
+              <g><circle cx="38" r="5" fill="#efe8d2"/><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="6s" repeatCount="indefinite"/></g></g>
+          </svg>
+          <figcaption id="orbit-cap"></figcaption>
+        </figure>
+
+        <dl class="stats">
+          <div><dt>อยู่บนโลกมาแล้ว</dt><dd><span id="s-days"></span> วัน</dd></div>
+          <div><dt>เดินทางรอบดวงอาทิตย์ไปแล้ว</dt><dd><span id="s-km"></span> กม.</dd></div>
+          <div><dt>ผ่านคืนพระจันทร์เต็มดวง</dt><dd><span id="s-moon"></span> ครั้ง</dd></div>
+        </dl>
+      </section>
+
+      <section id="games" class="section">
+        <header class="head">
+          <h2>ภารกิจสะสมดาว</h2>
+          <p>8 เกม ของสะสม 28 ชิ้น เก็บครบแล้วจะมีข้อความลับส่งมาถึงเธอ</p>
+        </header>
+        <div id="game-grid" class="game-grid"></div>
+      </section>
+
+      <section id="album" class="section">
+        <header class="head">
+          <h2>สมุดสะสม</h2>
+          <p><span id="album-count"></span> แตะแต่ละช่องเพื่อดูว่าหาได้จากเกมไหน</p>
+          <div class="bar"><i id="album-bar"></i></div>
+        </header>
+        <div id="album-grid" class="album-grid"></div>
+        <p id="album-info" class="album-info" aria-live="polite"></p>
+      </section>
+
+      <section id="letters" class="section">
+        <header class="head"><h2>ข้อความจากอวกาศ</h2></header>
+        <div class="letters">
+          <article class="panel">
+            <h3>ขอพรจากดาวตก</h3>
+            <p id="wish-text" class="wish" aria-live="polite">หลับตา นึกถึงสิ่งที่อยากได้ แล้วเรียกดาวตกลงมา</p>
+            <button class="btn" id="wish-btn" type="button">เรียกดาวตก</button>
+          </article>
+          <article class="panel">
+            <h3>ปัดฝุ่นดาว</h3>
+            <div class="scratch" id="scratch">
+              <p id="scratch-text"></p>
+              <canvas id="scratch-canvas" aria-label="ถูเพื่อเปิดข้อความ"></canvas>
+            </div>
+          </article>
+          <article class="panel panel-letter">
+            <button id="env-btn" class="env" type="button"><img data-art="envelope" alt=""><span>แตะเพื่อเปิดจดหมาย</span></button>
+            <div id="letter" class="letter" hidden></div>
+          </article>
+        </div>
+      </section>
+    </main>
+
     <footer class="footer">
-      <p>ทำด้วย 💖 สำหรับ <strong>เอ็นดู</strong></p>
-      <p class="footer-secret" id="footer-secret">แตะหัวใจ 5 ครั้งเพื่อเซอร์ไพรส์...</p>
-      <button id="secret-heart" class="secret-heart" aria-label="หัวใจลับ">🤍</button>
+      <p>ทำด้วยใจ สำหรับ<strong>เอ็นดู</strong></p>
+      <button id="secret-btn" class="secret" type="button" aria-label="ดาวลับ"><img data-art="star-pink" alt=""></button>
+      <p class="muted">แตะดาว 5 ครั้งดูสิ</p>
     </footer>
-  </main>
-
-  <!-- Secret modal -->
-  <div id="secret-modal" class="modal" hidden>
-    <div class="modal-backdrop"></div>
-    <div class="modal-content">
-      <button class="modal-close" id="modal-close" aria-label="ปิด">✕</button>
-      <h2>🎆 เซอร์ไพรส์!</h2>
-      <p>เอ็นดูคือแสงสว่างของวันนี้<br>ขอให้มีความสุขมาก ๆ นะ ณัฐชยา!</p>
-      <button class="btn-primary" id="modal-confetti">ฉลองอีกครั้ง!</button>
-    </div>
   </div>
 
-  <script src="js/confetti.js"></script>
-  <script src="js/music.js"></script>
-  <script src="js/extras.js"></script>
-  <script src="js/main.js"></script>
+  <!-- เกมเต็มจอ -->
+  <div id="game" class="game" role="dialog" aria-modal="true" aria-labelledby="game-title" hidden>
+    <div class="game-top">
+      <b id="game-title"></b>
+      <div id="game-hud" class="game-hud"></div>
+      <button id="game-close" class="game-close" type="button" aria-label="ปิดเกม">✕</button>
+    </div>
+    <div id="game-stage" class="game-stage"></div>
+    <div id="game-panel" class="game-panel" hidden></div>
+  </div>
+
+  <dialog id="secret" class="dialog">
+    <img id="secret-img" alt="">
+    <h3 id="secret-title"></h3>
+    <p id="secret-text"></p>
+    <form method="dialog"><button class="btn">ปิด</button></form>
+  </dialog>
+
+  <script src="js/birthday.js?v=2"></script>
+  <script src="js/art.js?v=2"></script>
+  <script src="js/audio.js?v=2"></script>
+  <script src="js/sky.js?v=2"></script>
+  <script src="js/album.js?v=2"></script>
+  <script src="js/games/shell.js?v=2"></script>
+  <script src="js/games/fly.js?v=2"></script>
+  <script src="js/games/meteor.js?v=2"></script>
+  <script src="js/games/constellation.js?v=2"></script>
+  <script src="js/games/board.js?v=2"></script>
+  <script src="js/games/cake.js?v=2"></script>
+  <script src="js/main.js?v=2"></script>
 </body>
 </html>
